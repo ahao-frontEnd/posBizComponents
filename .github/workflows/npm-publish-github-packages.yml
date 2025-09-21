@@ -16,6 +16,7 @@ jobs:  # 定义工作流中的任务（Job）
         uses: actions/setup-node@v3  # 使用GitHub官方的Node.js设置动作
         with:
           node-version: '18'  # 指定Node.js版本（如16、18、20）
+          cache: 'npm'  # 缓存npm依赖，加快后续安装速度
       
       - name: Install dependencies  # 步骤3：安装项目依赖
         run: npm ci  # 运行npm ci命令（需项目有package.json）
@@ -29,25 +30,14 @@ jobs:  # 定义工作流中的任务（Job）
       - name: Build artifacts  # 步骤5：构建产物（如打包前端项目）
         run: npm run build  # 运行npm run build命令（需项目配置build脚本，如Webpack、Vite）
 
-  # deploy:  # 第二个任务：部署（可选，仅在CI通过后执行）
-  #   needs: build  # 依赖build任务（build成功后才执行deploy）
-  #   runs-on: ubuntu-latest
+  deploy:  # 第二个任务：部署（可选，仅在CI通过后执行）
+    needs: build  # 依赖build任务（build成功后才执行deploy）
+    runs-on: ubuntu-latest
     
-  #   steps:
-  #     - name: Checkout code
-  #       uses: actions/checkout@v3
-      
-  #     - name: Set up Node.js
-  #       uses: actions/setup-node@v3
-  #       with:
-  #         node-version: '18'
-      
-  #     - name: Install dependencies
-  #       run: npm ci
-      
-  #     - name: Deploy to production  # 步骤：部署到生产环境（以Heroku为例）
-  #       uses: akhileshns/heroku-deploy@v3.12.12  # 使用第三方部署动作（支持Heroku、AWS等）
-  #       with:
-  #         heroku_api_key: ${{ secrets.HEROKU_API_KEY }}  # 从GitHub Secrets获取API密钥（敏感信息）
-  #         heroku_app_name: "your-app-name"  # Heroku应用名称（自定义）
-  #         heroku_email: "your-email@example.com"  # Heroku账号邮箱
+    steps:
+      # 6. 发布到npm（仅在构建成功后执行）
+      - name: Publish to npm
+        if: success()  # 仅当上一步成功时执行
+        run: npm publish --access public  # 发布组件库（--access public表示公开包，私有包需替换为--access private）
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}  # 使用GitHub Secret中的npm token认证
