@@ -9,6 +9,8 @@ on:  # 触发条件（定义何时启动流程）
 
 jobs:  # 定义工作流中的任务（Job）
   build:  # 第一个任务：构建与测试
+    # 此作业仅在由 push 事件触发时运行，不会由 tag 触发
+    if: github.event_name == 'push' || startsWith(github.ref, 'refs/tags/') == false
     runs-on: ubuntu-latest  # 运行环境（GitHub提供的Ubuntu虚拟机）
     
     steps:  # 任务的具体步骤
