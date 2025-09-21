@@ -62,8 +62,6 @@ jobs:  # 定义工作流中的任务（Job）
 
       # 6. 发布到npm（仅在构建成功后执行）
       - name: Publish to npm
-        email: wujihao.1024@foxmail.com
         run: npm publish --access public  # 发布组件库（--access public表示公开包，私有包需替换为--access private）
-        api_key: ${{ secrets.NPM_TOKEN }}
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}  # 使用GitHub Secret中的npm token认证
