@@ -42,6 +42,10 @@ jobs:  # 定义工作流中的任务（Job）
         uses: actions/setup-node@v3
         with:
           node-version: '18'
+          cache: 'npm'  # 缓存npm依赖，加快后续安装速度
+
+      - name: Install dependencies  # 步骤3：安装项目依赖
+        run: npm ci  # 运行npm ci命令（需项目有package.json）
       
       # 6. 发布到npm（仅在构建成功后执行）
       - name: Publish to npm
