@@ -13,10 +13,14 @@
     "UI",
     "Vue3"
   ],
+  "homepage": "https://gitee.com/wu_jihao/pos-biz-components",
   "repository": {
     "type": "git",
-    "url": ""
+    "url": "https://gitee.com/wu_jihao/pos-biz-components"
   },
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "dev": "vite",
     "build:esm": "rollup --config rollup.esm.config.js",
