@@ -1,6 +1,6 @@
 {
   "name": "pos-biz-components",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "private": false,
   "type": "module",
   "main": "dist/pos-biz-components.umd.js",
