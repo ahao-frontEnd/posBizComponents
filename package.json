@@ -22,11 +22,12 @@
     "dist"
   ],
   "scripts": {
-    "dev": "vite",
     "build:esm": "rollup --config rollup.esm.config.js",
     "build:umd": "rollup --config rollup.umd.config.js",
     "clean": "rimraf ./dist",
     "build": "npm run clean && npm run build:esm && npm run build:umd",
+    "prepublishOnly": "npm run build",
+    "dev": "vite",
     "preview": "vite preview",
     "test:unit": "vitest",
     "build-only": "vite build",
