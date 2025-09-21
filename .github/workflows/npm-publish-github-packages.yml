@@ -52,6 +52,9 @@ jobs:  # 定义工作流中的任务（Job）
 
       - name: Set registry to official source
         run: npm config set registry https://registry.npmjs.org/
+
+      - name: Npm Adduser
+        run: npm adduser # authorize this machine
       
       # 6. 发布到npm（仅在构建成功后执行）
       - name: Publish to npm
