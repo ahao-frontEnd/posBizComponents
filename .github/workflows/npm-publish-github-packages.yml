@@ -35,6 +35,14 @@ jobs:  # 定义工作流中的任务（Job）
     runs-on: ubuntu-latest
     
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      
       # 6. 发布到npm（仅在构建成功后执行）
       - name: Publish to npm
         if: success()  # 仅当上一步成功时执行
