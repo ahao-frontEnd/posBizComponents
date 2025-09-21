@@ -1,4 +1,4 @@
-import basicConfig, { file, name } from './rollup.config.js'
+import basicConfig, { file } from './rollup.config.js'
 
 export default {
   ...basicConfig,
