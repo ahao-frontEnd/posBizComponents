@@ -1,37 +1,53 @@
-# This workflow will run tests using node and then publish a package to GitHub Packages when a release is created
-# For more information see: https://docs.github.com/en/actions/publishing-packages/publishing-nodejs-packages
+name: Node.js CI/CD Pipeline  # 工作流名称（自定义）
 
-name: Node.js Package
+on:  # 触发条件（定义何时启动流程）
+  push:  # 当代码推送到指定分支时触发
+    branches: [ master ]  # 监听的分支（如main、develop）
 
-jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+jobs:  # 定义工作流中的任务（Job）
+  build:  # 第一个任务：构建与测试
+    runs-on: ubuntu-latest  # 运行环境（GitHub提供的Ubuntu虚拟机）
+    
+    steps:  # 任务的具体步骤
+      - name: Checkout code  # 步骤1：拉取代码
+        uses: actions/checkout@v3  # 使用GitHub官方的checkout动作（必用）
+      
+      - name: Set up Node.js  # 步骤2：设置Node.js环境
+        uses: actions/setup-node@v3  # 使用GitHub官方的Node.js设置动作
         with:
-          node-version: 20
-      - run: npm ci
-      - run: npm lint
-      - run: npm test:unit
+          node-version: '18'  # 指定Node.js版本（如16、18、20）
+      
+      - name: Install dependencies  # 步骤3：安装项目依赖
+        run: npm ci  # 运行npm ci命令（需项目有package.json）
+      
+      - name: Run Eslint  
+        run: npm run lint 
 
-on:
-  release:
-    types: [created]
+      - name: Run tests  # 步骤4：运行测试
+        run: npm run test:unit  # 运行npm test命令（需项目配置测试框架，如Jest、Mocha）
+      
+      - name: Build artifacts  # 步骤5：构建产物（如打包前端项目）
+        run: npm run build  # 运行npm run build命令（需项目配置build脚本，如Webpack、Vite）
 
-    publish-gpr:
-      needs: build
-      runs-on: ubuntu-latest
-      permissions:
-        contents: read
-        packages: write
-      steps:
-        - uses: actions/checkout@v4
-        - uses: actions/setup-node@v4
-          with:
-            node-version: 20
-            registry-url: https://npm.pkg.github.com/
-        - run: npm ci
-        - run: npm publish
-          env:
-            NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
+  # deploy:  # 第二个任务：部署（可选，仅在CI通过后执行）
+  #   needs: build  # 依赖build任务（build成功后才执行deploy）
+  #   runs-on: ubuntu-latest
+    
+  #   steps:
+  #     - name: Checkout code
+  #       uses: actions/checkout@v3
+      
+  #     - name: Set up Node.js
+  #       uses: actions/setup-node@v3
+  #       with:
+  #         node-version: '18'
+      
+  #     - name: Install dependencies
+  #       run: npm ci
+      
+  #     - name: Deploy to production  # 步骤：部署到生产环境（以Heroku为例）
+  #       uses: akhileshns/heroku-deploy@v3.12.12  # 使用第三方部署动作（支持Heroku、AWS等）
+  #       with:
+  #         heroku_api_key: ${{ secrets.HEROKU_API_KEY }}  # 从GitHub Secrets获取API密钥（敏感信息）
+  #         heroku_app_name: "your-app-name"  # Heroku应用名称（自定义）
+  #         heroku_email: "your-email@example.com"  # Heroku账号邮箱
