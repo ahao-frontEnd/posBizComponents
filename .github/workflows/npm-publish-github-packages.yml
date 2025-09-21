@@ -3,6 +3,9 @@ name: Node.js CI/CD Pipeline  # 工作流名称（自定义）
 on:  # 触发条件（定义何时启动流程）
   push:  # 当代码推送到指定分支时触发
     branches: [ master ]  # 监听的分支（如main、develop）
+  # CD 部分：仅当推送特定格式的 tag（如 v1.0.0）时触发发布
+  push:
+    tags: [ 'v*.*.*' ]
 
 jobs:  # 定义工作流中的任务（Job）
   build:  # 第一个任务：构建与测试
@@ -32,6 +35,7 @@ jobs:  # 定义工作流中的任务（Job）
 
   deploy:  # 第二个任务：部署（可选，仅在CI通过后执行）
     needs: build  # 依赖build任务（build成功后才执行deploy）
+    if: startsWith(github.ref, 'refs/tags/') # 确保仅在推送 tag 时运行
     runs-on: ubuntu-latest
     
     steps:
@@ -54,14 +58,7 @@ jobs:  # 定义工作流中的任务（Job）
       - name: Set registry to official source
         run: npm config set registry https://registry.npmjs.org/
 
-      # - name: Debug publish process
-      #   run: |
-      #     echo "Current directory: $(pwd)"  # 打印当前工作目录
-      #     ls -la                            # 列出目录文件（确认package.json存在）
-      #     cat package.json                  # 打印package.json内容（确认字段完整）
-      #     npm whoami                        # 验证当前登录账号（需返回npm账号用户名）
-
-      # 6. 发布到npm（仅在构建成功后执行）
+      # 发布到npm（仅在构建成功后执行）
       - name: Publish to Npm
         run: npm publish --access public  # 发布组件库（--access public表示公开包，私有包需替换为--access private）
         env:
